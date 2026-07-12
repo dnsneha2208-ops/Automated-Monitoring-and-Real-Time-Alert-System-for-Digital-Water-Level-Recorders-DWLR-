@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Level Dashboard</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .top {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .bottom {
+            flex: 1;
+            display: flex;
+        }
+        .bottom > div {
+            flex: 1;
+        }
+        .bottom .left {
+            border-right: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Water Level Bar Chart - Top 50% -->
+        <div class="top">
+            <div>
+                {{ bar_graph_html|safe }}
+            </div>
+        </div>
+
+        <!-- Z-Score and IQR - Bottom 50% -->
+        <div class="bottom">
+            <div class="left">
+                {{ z_score_fig_html|safe }}
+            </div>
+            <div class="right">
+                {{ iqr_fig_html|safe }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

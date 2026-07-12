@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Areas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            padding: 20px;
+            background-color: #0078d4;
+            color: white;
+            margin: 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .button-container button, .button-container select {
+            margin: 10px;
+        }
+        .button-container button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #005a9e;
+        }
+        .button-container select {
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .charts {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .metrics-charts {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .chart {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 48%; /* Adjust width to fit side by side */
+        }
+        .chart h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        .trend {
+            width: 100%;
+        }
+    </style>
+    <script>
+        function updateGraph() {
+            var selectedMetric = document.getElementById('metric-select').value;
+            var selectedDWLR = document.getElementById('dwlr-select').value;
+            var city = document.getElementById('city-select').value;
+
+            var url = '/areas?metric=' + selectedMetric +
+                      '&dwlr=' + selectedDWLR +
+                      '&city=' + city;
+            window.location.href = url;
+        }
+
+        function updateCityOptions() {
+            var city = document.getElementById('city-select').value;
+            var dwlrSelect = document.getElementById('dwlr-select');
+
+            dwlrSelect.innerHTML = '<option value="">Select DWLR</option>';
+
+            var dwlrOptions = [];
+            if (city === 'nuzvid') {
+                dwlrOptions = ['dwlr1', 'dwlr2'];
+            } else if (city === 'vijayawada') {
+                dwlrOptions = ['dwlr3', 'dwlr4'];
+            }
+
+            dwlrOptions.forEach(function(dwlr) {
+                var option = document.createElement('option');
+                option.value = dwlr;
+                option.textContent = dwlr.charAt(0).toUpperCase() + dwlr.slice(1);
+                dwlrSelect.appendChild(option);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Areas</h1>
+
+    <div class="button-container">
+        <select id="city-select" onchange="updateCityOptions()">
+            <option value="">Select City</option>
+            <option value="vijayawada">Vijayawada</option>
+            <option value="nuzvid">Nuzvid</option>
+        </select>
+        <select id="dwlr-select">
+            <option value="">Select DWLR</option>
+        </select>
+
+        <select id="metric-select">
+            <option value="water-level">Water Level</option>
+            <option value="temperature">Temperature</option>
+            <option value="pressure">Pressure</option>
+        </select>
+
+        <button onclick="updateGraph()">Submit</button>
+    </div>
+
+    <div id="metrics">
+        <div class="chart-container">
+            <div class="charts">
+                <!-- Display the selected metric graph -->
+                {{ selected_graph_html|safe }}
+            </div>
+        </div>
+        <div class="metrics-charts">
+            <div class="chart">
+                <h2>Z-Score</h2>
+                <!-- Display the Z-Score graph -->
+                {{ z_score_graph_html|safe }}
+            </div>
+            <div class="chart">
+                <h2>IQR</h2>
+                <!-- Display the IQR graph -->
+                {{ iqr_graph_html|safe }}
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="trend">
+                <h2>Trend Analysis</h2>
+                <!-- Display the Trend Analysis graph -->
+                {{ trend_graph_html|safe }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

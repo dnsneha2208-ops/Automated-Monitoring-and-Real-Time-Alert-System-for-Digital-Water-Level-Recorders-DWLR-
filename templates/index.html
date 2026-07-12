@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            padding: 20px;
+            background-color: #0078d4;
+            color: white;
+            margin: 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .button-container button, .button-container select, .button-container input {
+            margin: 10px;
+        }
+        .button-container button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #005a9e;
+        }
+        .button-container select, .button-container input {
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .charts, .trend {
+            width: 100%; /* Full width for selected graph and trend analysis */
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .charts h2, .trend h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        .metrics-charts {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .chart {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 48%; /* Adjust width for side-by-side smaller graphs (Z-Score & IQR) */
+        }
+        .alert-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 48%;
+        }
+        #record-btn {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        .toggle-element {
+            width: 100%;
+        }
+    </style>
+ <script>
+function updateGraph() {
+    var selectedMetric = document.getElementById('metric-select').value;
+    var selectedDWLR = document.getElementById('dwlr-select').value;
+    var fromDate = document.getElementById('from-date').value;
+    var toDate = document.getElementById('to-date').value;
+    var city = document.getElementById('city-select').value;
+
+    var url = '/?metric=' + selectedMetric +
+              '&dwlr=' + selectedDWLR +
+              '&start_date=' + fromDate +
+              '&end_date=' + toDate +
+              '&city=' + city +
+              '&showMetrics=true'; // Added query param to show metrics
+
+    window.location.href = url;
+}
+
+window.onload = function() {
+    // Check if 'showMetrics' exists in the query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showMetrics') === 'true') {
+        // Show the metrics section
+        document.getElementById('metrics').classList.remove('hidden');
+    }
+};
+
+        function toggleVisibility(id) {
+            var metrics = document.getElementById('metrics');
+            var alerts = document.getElementById('alerts');
+            var recordSection = document.getElementById('record-section');
+
+            if (id === 'metrics') {
+                metrics.classList.remove('hidden');
+                alerts.classList.add('hidden');
+                recordSection.classList.add('hidden');
+            } else if (id === 'alerts') {
+                metrics.classList.add('hidden');
+                alerts.classList.remove('hidden');
+                recordSection.classList.add('hidden');
+            }
+        }
+function toggleRecords() {
+    var elementsToToggle = document.querySelectorAll('.toggle-element');
+    var recordButton = document.getElementById('record-btn');
+
+    elementsToToggle.forEach(function(element) {
+        if (element.classList.contains('hidden')) {
+            element.classList.remove('hidden');
+            recordButton.textContent = 'Hide Records';
+            localStorage.setItem('recordsVisible', 'true');  // Save state to localStorage
+        } else {
+            element.classList.add('hidden');
+            recordButton.textContent = 'Show Records';
+            localStorage.setItem('recordsVisible', 'false');  // Save state to localStorage
+        }
+    });
+}
+
+window.onload = function() {
+    // Check localStorage to see if records should be visible
+    if (localStorage.getItem('recordsVisible') === 'true') {
+        document.getElementById('record-btn').textContent = 'Hide Records';
+        document.querySelectorAll('.toggle-element').forEach(function(element) {
+            element.classList.remove('hidden');
+        });
+    }
+};
+
+        function updateCityOptions() {
+            var city = document.getElementById('city-select').value;
+            var dwlrSelect = document.getElementById('dwlr-select');
+
+            dwlrSelect.innerHTML = '<option value="">Select DWLR</option>';
+
+            var dwlrOptions = [];
+            if (city === 'nuzvid') {
+                dwlrOptions = ['dwlr1', 'dwlr2'];
+            } else if (city === 'vijayawada') {
+                dwlrOptions = ['dwlr', 'dwlr1'];
+            }
+
+            dwlrOptions.forEach(function(dwlr) {
+                var option = document.createElement('option');
+                option.value = dwlr;
+                option.textContent = dwlr.charAt(0).toUpperCase() + dwlr.slice(1);
+                dwlrSelect.appendChild(option);
+            });
+        }
+
+        function toggleAlerts() {
+            var alerts = document.getElementById('alerts');
+            var alertsButton = document.getElementById('alerts-btn');
+
+            if (alerts.classList.contains('hidden')) {
+                alerts.classList.remove('hidden');
+                alertsButton.textContent = 'Hide Alerts';
+            } else {
+                alerts.classList.add('hidden');
+                alertsButton.textContent = 'Show Alerts';
+            }
+        }
+
+        function goToAreas() {
+            window.location.href = '/areas';
+        }
+    </script>
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <div class="button-container">
+        <button id="record-btn" onclick="toggleRecords()">Show Records</button>
+
+        <button id="areas-btn" onclick="goToAreas()">Show Areas</button>
+    </div>
+
+    <div class="button-container toggle-element hidden">
+        <select id="city-select" onchange="updateCityOptions()">
+            <option value="">Select City</option>
+            <option value="vijayawada">Vijayawada</option>
+            <option value="nuzvid">Nuzvid</option>
+        </select>
+        <select id="dwlr-select">
+            <option value="">Select DWLR</option>
+        </select>
+
+        <select id="metric-select">
+            <option value="water-level">Water Level</option>
+            <option value="temperature">Temperature</option>
+            <option value="pressure">Pressure</option>
+        </select>
+
+        <input type="date" id="from-date" value="{{ start_date }}">
+        <input type="date" id="to-date" value="{{ end_date }}">
+
+        <button onclick="updateGraph()">Submit</button>
+    </div>
+
+    <div id="metrics" class="hidden toggle-element">
+        <div class="chart-container">
+            <div class="chart charts" style="width: 100%;">
+                {{ selected_graph_html|safe }}
+            </div>
+        </div>
+        <div class="metrics-charts">
+            <div class="chart">
+                <h2>Z-Score</h2>
+                {{ z_score_graph_html|safe }}
+            </div>
+            <div class="chart">
+                <h2>IQR</h2>
+                {{ iqr_graph_html|safe }}
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="trend">
+                <h2>Trend Analysis</h2>
+                {{ trend_graph_html|safe }}
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- The Areas section will be served by the /areas route -->
+</body>
+</html>
