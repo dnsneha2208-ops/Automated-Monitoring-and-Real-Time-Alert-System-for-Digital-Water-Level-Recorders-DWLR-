@@ -36,8 +36,7 @@ This system automates the process of collecting water level data, analyzing it, 
 ## 🚀 How to Run Locally
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Sailajayadav/AutomatedDataMonitoring-and-AlertSystem-for-DWLRs/
-   cd <repo-name>
+   git clone https://github.com/dnsneha2208-ops/Automated-Monitoring-and-Real-Time-Alert-System-for-Digital-Water-Level-Recorders-DWLR-.git
 =======
 # Automated-Monitoring-and-Real-Time-Alert-System-for-Digital-Water-Level-Recorders-DWLR
 
