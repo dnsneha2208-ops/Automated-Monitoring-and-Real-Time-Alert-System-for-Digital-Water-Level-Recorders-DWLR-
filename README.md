@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Automated Monitoring and Real-Time Alert System for Digital Water Level Recorders (DWLR)
 
 ## 📌 Overview
